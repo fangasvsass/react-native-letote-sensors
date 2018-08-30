@@ -1,4 +1,5 @@
 
+
 # react-native-letote-sensors
 
 ## Getting started
@@ -50,4 +51,3 @@ import RNSensors from 'react-native-letote-sensors';
 // TODO: What to do with the module?
 RNSensors;
 ```
-  
