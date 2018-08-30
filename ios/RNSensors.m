@@ -9,14 +9,15 @@
 }
 RCT_EXPORT_MODULE()
 
+//普通事件
 RCT_EXPORT_METHOD(track:(NSString *)eventId) {
     [[SensorsAnalyticsSDK sharedInstance] track:eventId];
 }
-
+//带属性的事件
 RCT_EXPORT_METHOD(trackWithProperties:(NSString *)eventId properties:(NSDictionary *)properties) {
     [[SensorsAnalyticsSDK sharedInstance] track:eventId withProperties:properties];
 }
-
+//会发送 $AppClick 事件，会包含点击的相应控件的基本信息。 App 启动或从后台恢复时，会自动记录 $AppStart 事件，事件属性 App 进入后台时，会自动记录 $AppEnd 事件，事件属性: App 浏览页面时（切换 ViewController），会自动记录记录 $AppViewScreen 事件，事件属性:
 RCT_EXPORT_METHOD(enableAutoTrack) {
     // 打开自动采集, 并指定追踪哪些 AutoTrack 事件
     [[SensorsAnalyticsSDK sharedInstance] enableAutoTrack:SensorsAnalyticsEventTypeAppStart |
@@ -32,10 +33,11 @@ RCT_EXPORT_METHOD(setPublicEvent:(NSString *)eventId value:(NSString *)value) {
 RCT_EXPORT_METHOD(login:(NSString *)userId) {
     [[SensorsAnalyticsSDK sharedInstance] login:userId];
 }
-
+// 记录事件开始时间
 RCT_EXPORT_METHOD(trackTimerStart:(NSString *)eventId) {
     [[SensorsAnalyticsSDK sharedInstance] trackTimerStart:eventId];
 }
+//记录事件结束时间
 RCT_EXPORT_METHOD(trackTimerEnd:(NSString *)eventId properties:(NSDictionary *)properties) {
     [[SensorsAnalyticsSDK sharedInstance] trackTimerEnd:eventId withProperties:properties];
 }
@@ -43,7 +45,7 @@ RCT_EXPORT_METHOD(trackTimerEnd:(NSString *)eventId properties:(NSDictionary *)p
 RCT_EXPORT_METHOD(profileSet:(NSString *)eventId value:(NSString *)value) {
     [[[SensorsAnalyticsSDK sharedInstance] people] set:eventId to:value];
 }
-//记录初次设定的属性
+//记录初次设定的属性 第二次再设定不会改变值
 RCT_EXPORT_METHOD(profileSetOnce:(NSString *)eventId value:(NSString *)value) {
     [[[SensorsAnalyticsSDK sharedInstance] people] setOnce:eventId to:value];
 }
@@ -51,11 +53,11 @@ RCT_EXPORT_METHOD(profileSetOnce:(NSString *)eventId value:(NSString *)value) {
 RCT_EXPORT_METHOD(profileIncrement:(NSDictionary *)properties) {
     [[[SensorsAnalyticsSDK sharedInstance] people] increment:properties];
 }
-//记录列表型属性
+//记录用户profile列表型属性
 RCT_EXPORT_METHOD(profileAppend:(NSString *)eventId array:(NSArray *)array) {
     [[[SensorsAnalyticsSDK sharedInstance] people] append:eventId by:[NSSet setWithArray:array]];
 }
-// 替换默认匿名id
+// 替换默认匿名id 匿名id:神策分析 iOS SDK 分配的 匿名 ID
 RCT_EXPORT_METHOD(identify:(NSString *)identifyId) {
     [[SensorsAnalyticsSDK sharedInstance] identify:identifyId];
 }
