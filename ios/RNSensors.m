@@ -61,6 +61,12 @@ RCT_EXPORT_METHOD(profileAppend:(NSString *)eventId array:(NSArray *)array) {
 RCT_EXPORT_METHOD(identify:(NSString *)identifyId) {
     [[SensorsAnalyticsSDK sharedInstance] identify:identifyId];
 }
+//通过代码 track 浏览页面事件
+RCT_EXPORT_METHOD(trackViewScreen:(NSDictionary *)properties) {
+    [[SensorsAnalyticsSDK sharedInstance] trackViewScreen:nil
+                                           withProperties:properties];
+}
+
 
 @end
   
