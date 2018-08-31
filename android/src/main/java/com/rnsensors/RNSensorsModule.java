@@ -43,8 +43,15 @@ public class RNSensorsModule extends ReactContextBaseJavaModule {
     public void enableReactNativeAutoTrack() {
         SensorsDataAPI.sharedInstance().enableReactNativeAutoTrack();
     }
-
-
+    @ReactMethod
+    public void trackViewScreen( ReadableMap map){
+        try {
+            JSONObject properties = toJsonObject(map);
+            SensorsDataAPI.sharedInstance().trackViewScreen(null, properties);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @ReactMethod
     public void track(String event) {
