@@ -4,28 +4,30 @@ const { RNSensors } = NativeModules
 
 const reservedKeys = {
   time: true,
-  _track_id: true,
-  event: true,
-  _flush_time: true,
-  distinct_id: true,
-  properties: true,
-  type: true,
+  device_id: true,
+  os_version: true,
+  os: true,
+  screen_height: true,
+  is_first_day: true,
   lib: true,
-  project: true,
-  extractor: true,
-  recv_time: true,
-  ngx_ip: true,
-  process_time: true,
-  map_id: true,
-  user_id: true,
-  project_id: true,
-  ver: true
+  model: true,
+  wifi: true,
+  screen_width: true,
+  network_type: true,
+  manufacturer: true,
+  app_version: true,
+  lib_version: true,
+  ip: true,
+  city: true,
+  province: true,
+  country: true,
+  is_login_id: true
 }
 const formatData = data => {
   const obj = { ...data }
   for (var key in obj) {
     if (reservedKeys[key]) {
-      obj[`_${key}`] = obj[key]
+      obj[`_{key}`] = obj[key]
       delete obj[key]
     }
   }
