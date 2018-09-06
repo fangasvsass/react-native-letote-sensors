@@ -27,7 +27,7 @@ const formatData = data => {
   const obj = { ...data }
   for (var key in obj) {
     if (reservedKeys[key]) {
-      obj[`_{key}`] = obj[key]
+      obj[`_${key}`] = obj[key]
       delete obj[key]
     }
   }
