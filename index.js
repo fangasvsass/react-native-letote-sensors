@@ -2,17 +2,41 @@ import { NativeModules } from 'react-native'
 
 const { RNSensors } = NativeModules
 
+const reservedKeys = {
+  time: true,
+  _track_id: true,
+  event: true,
+  _flush_time: true,
+  distinct_id: true,
+  properties: true,
+  type: true,
+  lib: true,
+  project: true,
+  extractor: true,
+  recv_time: true,
+  ngx_ip: true,
+  process_time: true,
+  map_id: true,
+  user_id: true,
+  project_id: true,
+  ver: true
+}
 const formatData = data => {
-  if (data['time']) {
-    data._time = data['time']
-    data.time = undefined
-    delete data.time
+  const obj = { ...data }
+  for (var key in obj) {
+    if (reservedKeys[key]) {
+      obj[`_${key}`] = obj[key]
+      delete obj[key]
+    }
   }
-  return data
+  return obj
 }
 const formatEventString = event => {
-  if (event == 'time') return '_time'
-  else return event
+  if (reservedKeys[event]) {
+    return '_' + event
+  } else {
+    return event
+  }
 }
 export default class Sensors {
   static trackWithProperties(event, data) {
