@@ -85,4 +85,10 @@ export default class Sensors {
   static enableAutoTrack() {
     RNSensors.enableAutoTrack()
   }
+  static trackInstallation(event) {
+    RNSensors.trackInstallation(formatEventString(event))
+  }
+  static trackInstallationWithProperties(event, data) {
+    RNSensors.enableAutoTrack(formatEventString(event), formatData(data))
+  }
 }

@@ -52,6 +52,22 @@ public class RNSensorsModule extends ReactContextBaseJavaModule {
             e.printStackTrace();
         }
     }
+    @ReactMethod
+    public void trackInstallation(String eventId){
+        SensorsDataAPI.sharedInstance().trackInstallation(eventId);
+    }
+
+    @ReactMethod
+    public void trackInstallationWithProperties(String eventId,ReadableMap map){
+        JSONObject properties ;
+        try {
+            properties = toJsonObject(map);
+            SensorsDataAPI.sharedInstance().trackInstallation(eventId,properties);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     @ReactMethod
     public void track(String event) {

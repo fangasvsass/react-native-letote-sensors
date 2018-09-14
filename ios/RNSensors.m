@@ -66,7 +66,15 @@ RCT_EXPORT_METHOD(trackViewScreen:(NSDictionary *)properties) {
     [[SensorsAnalyticsSDK sharedInstance] trackViewScreen:nil
                                            withProperties:properties];
 }
+//App安装事件
+RCT_EXPORT_METHOD(trackInstallation:(NSString *)eventId) {
+    [[SensorsAnalyticsSDK sharedInstance] trackInstallation:eventId];
+}
+//App安装事件带属性
+RCT_EXPORT_METHOD(trackInstallationWithProperties:(NSString *)eventId properties:(NSDictionary *)properties) {
+    [[SensorsAnalyticsSDK sharedInstance] trackInstallation:eventId withProperties:properties];
+}
 
 
 @end
-  
+
