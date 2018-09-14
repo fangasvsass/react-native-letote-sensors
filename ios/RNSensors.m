@@ -33,6 +33,10 @@ RCT_EXPORT_METHOD(setPublicEvent:(NSString *)eventId value:(NSString *)value) {
 RCT_EXPORT_METHOD(login:(NSString *)userId) {
     [[SensorsAnalyticsSDK sharedInstance] login:userId];
 }
+//取消关联
+RCT_EXPORT_METHOD(logout) {
+    [[SensorsAnalyticsSDK sharedInstance]logout];
+}
 // 记录事件开始时间
 RCT_EXPORT_METHOD(trackTimerStart:(NSString *)eventId) {
     [[SensorsAnalyticsSDK sharedInstance] trackTimerStart:eventId];

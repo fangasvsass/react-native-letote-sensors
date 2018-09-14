@@ -109,7 +109,10 @@ public class RNSensorsModule extends ReactContextBaseJavaModule {
     public void login(String userId) {
         SensorsDataAPI.sharedInstance().login(userId);
     }
-
+    @ReactMethod
+    public void logout() {
+        SensorsDataAPI.sharedInstance().logout();
+    }
     @ReactMethod
     public void profileSet(ReadableMap map) {
         try {

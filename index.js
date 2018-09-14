@@ -67,6 +67,9 @@ export default class Sensors {
   static login(id) {
     RNSensors.login(id)
   }
+  static logout() {
+    RNSensors.logout()
+  }
   static profileSet(data) {
     RNSensors.profileSet(formatData(data))
   }
