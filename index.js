@@ -3,6 +3,7 @@ import { NativeModules } from 'react-native'
 const { RNSensors } = NativeModules
 
 const reservedKeys = {
+  id:true,	
   time: true,
   device_id: true,
   os_version: true,
