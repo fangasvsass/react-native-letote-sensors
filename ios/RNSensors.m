@@ -29,6 +29,10 @@ RCT_EXPORT_METHOD(enableAutoTrack) {
 RCT_EXPORT_METHOD(setPublicEvent:(NSString *)eventId value:(NSString *)value) {
     [[SensorsAnalyticsSDK sharedInstance] registerSuperProperties:@{eventId:value}];
 }
+//删除用户公用属性
+RCT_EXPORT_METHOD(unsetPublicEvent:(NSString *)eventId) {
+    [[SensorsAnalyticsSDK sharedInstance] unregisterSuperProperty:eventId];
+}
 //将神策平台分配的id与userId进行关联
 RCT_EXPORT_METHOD(login:(NSString *)userId) {
     [[SensorsAnalyticsSDK sharedInstance] login:userId];
