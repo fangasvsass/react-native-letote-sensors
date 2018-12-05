@@ -29,6 +29,10 @@ RCT_EXPORT_METHOD(enableAutoTrack) {
 RCT_EXPORT_METHOD(setPublicEvent:(NSString *)eventId value:(NSString *)value) {
     [[SensorsAnalyticsSDK sharedInstance] registerSuperProperties:@{eventId:value}];
 }
+//删除用户公用属性
+RCT_EXPORT_METHOD(unsetPublicEvent:(NSString *)eventId) {
+    [[SensorsAnalyticsSDK sharedInstance] unregisterSuperProperty:eventId];
+}
 //将神策平台分配的id与userId进行关联
 RCT_EXPORT_METHOD(login:(NSString *)userId) {
     [[SensorsAnalyticsSDK sharedInstance] login:userId];
@@ -46,8 +50,8 @@ RCT_EXPORT_METHOD(trackTimerEnd:(NSString *)eventId properties:(NSDictionary *)p
     [[SensorsAnalyticsSDK sharedInstance] trackTimerEnd:eventId withProperties:properties];
 }
 //记录用户设定的属性
-RCT_EXPORT_METHOD(profileSet:(NSString *)eventId value:(NSString *)value) {
-    [[[SensorsAnalyticsSDK sharedInstance] people] set:eventId to:value];
+RCT_EXPORT_METHOD(profileSet:(NSDictionary *)properties) {
+    [[[SensorsAnalyticsSDK sharedInstance] people] set:properties];
 }
 //记录初次设定的属性 第二次再设定不会改变值
 RCT_EXPORT_METHOD(profileSetOnce:(NSString *)eventId value:(NSString *)value) {

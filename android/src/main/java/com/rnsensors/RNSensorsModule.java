@@ -104,6 +104,11 @@ public class RNSensorsModule extends ReactContextBaseJavaModule {
             e.printStackTrace();
         }
     }
+    @ReactMethod
+    public void unsetPublicEvent(String event) {
+        SensorsDataAPI.sharedInstance().unregisterSuperProperty(event);
+
+    }
 
     @ReactMethod
     public void login(String userId) {
