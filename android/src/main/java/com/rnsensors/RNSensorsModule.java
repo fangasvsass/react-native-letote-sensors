@@ -8,6 +8,7 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
+import com.sensorsdata.analytics.android.sdk.SensorsDataDynamicSuperProperties;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -159,6 +160,27 @@ public class RNSensorsModule extends ReactContextBaseJavaModule {
     public void identify(String identify) {
         SensorsDataAPI.sharedInstance().identify(identify);
     }
+
+    @ReactMethod
+    public void registerDynamicSuperProperties(ReadableMap map) {
+        try {
+            final JSONObject properties = toJsonObject(map);
+            SensorsDataAPI.sharedInstance().registerDynamicSuperProperties(new SensorsDataDynamicSuperProperties() {
+                @Override
+                public JSONObject getDynamicSuperProperties() {
+                    try {
+                        return properties;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @ReactMethod
     public void enableAutoTrack() {

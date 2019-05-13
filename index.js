@@ -3,7 +3,7 @@ import { NativeModules } from 'react-native'
 const { RNSensors } = NativeModules
 
 const reservedKeys = {
-  id:true,	
+  id: true,
   time: true,
   device_id: true,
   os_version: true,
@@ -94,5 +94,9 @@ export default class Sensors {
   }
   static trackInstallationWithProperties(event, data) {
     RNSensors.enableAutoTrack(formatEventString(event), formatData(data))
+  }
+
+  static registerDynamicSuperProperties(data) {
+    RNSensors.registerDynamicSuperProperties(formatData(data))
   }
 }
