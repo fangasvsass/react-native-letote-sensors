@@ -1,9 +1,11 @@
-//  SASwizzler.h
-//  SensorsAnalyticsSDK
-//
-//  Created by 雨晗 on 1/20/16
-//  Copyright © 2015－2018 Sensors Data Inc. All rights reserved.
-//
+/**
+ @file SAGzipUtility.m
+ @author Clint Harris (www.clintharris.net)
+ 
+ Note: The code in this file has been commented so as to be compatible with
+ Doxygen, a tool for automatically generating HTML-based documentation from
+ source code. See http://www.doxygen.org for more info.
+ */
 #import "zlib.h"
 #import "SALogger.h"
 #import "SAGzipUtility.h"

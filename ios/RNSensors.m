@@ -86,9 +86,10 @@ RCT_EXPORT_METHOD(trackInstallationWithProperties:(NSString *)eventId properties
 //App安装事件带属性
 RCT_EXPORT_METHOD(registerDynamicSuperProperties:(NSDictionary *)properties) {
     [[SensorsAnalyticsSDK sharedInstance] registerDynamicSuperProperties:^NSDictionary<NSString *,id> * _Nonnull{
-        return properties;
+      return properties;
     }];
 }
+
 
 @end
 

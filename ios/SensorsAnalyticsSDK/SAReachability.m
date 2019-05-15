@@ -1,9 +1,10 @@
-//  SASwizzler.h
-//  SensorsAnalyticsSDK
-//
-//  Created by 雨晗 on 1/20/16
-//  Copyright © 2015－2018 Sensors Data Inc. All rights reserved.
-//
+/*
+ Copyright (C) 2016 Apple Inc. All Rights Reserved.
+ See LICENSE.txt for this sample’s licensing information
+ 
+ Abstract:
+ Basic demonstration of how to use the SystemConfiguration Reachablity APIs.
+ */
 
 #import <arpa/inet.h>
 #import <ifaddrs.h>

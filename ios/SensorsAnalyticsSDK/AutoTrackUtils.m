@@ -3,7 +3,7 @@
 //  SensorsAnalyticsSDK
 //
 //  Created by 王灼洲 on 2017/6/29.
-//  Copyright © 2015－2018 Sensors Data Inc. All rights reserved.
+//  Copyright © 2017年 SensorsData. All rights reserved.
 //
 
 #import "AutoTrackUtils.h"
@@ -276,9 +276,10 @@
             [properties setValue:view.sensorsAnalyticsViewID forKey:@"$element_id"];
         }
 
-        UIViewController *viewController = [view sensorsAnalyticsViewController];
+        UIViewController *viewController = [view viewController];
 
-        if (viewController == nil || [viewController isKindOfClass:UINavigationController.class]) {
+        if (viewController == nil ||
+            [@"UINavigationController" isEqualToString:NSStringFromClass([viewController class])]) {
             viewController = [[SensorsAnalyticsSDK sharedInstance] currentViewController];
         }
 
@@ -386,8 +387,10 @@
 
         @try {
             if (view.sensorsAnalyticsDelegate) {
-                if ([view.sensorsAnalyticsDelegate conformsToProtocol:@protocol(SAUIViewAutoTrackDelegate)] && [view.sensorsAnalyticsDelegate respondsToSelector:@selector(sensorsAnalytics_collectionView:autoTrackPropertiesAtIndexPath:)]) {
+                if ([view.sensorsAnalyticsDelegate conformsToProtocol:@protocol(SAUIViewAutoTrackDelegate)]) {
+                    if ([view.sensorsAnalyticsDelegate respondsToSelector:@selector(sensorsAnalytics_collectionView:autoTrackPropertiesAtIndexPath:)]) {
                         [properties addEntriesFromDictionary:[view.sensorsAnalyticsDelegate sensorsAnalytics_collectionView:collectionView autoTrackPropertiesAtIndexPath:indexPath]];
+                    }
                 }
             }
         } @catch (NSException *exception) {
@@ -438,9 +441,10 @@
             [properties setValue:view.sensorsAnalyticsViewID forKey:@"$element_id"];
         }
 
-        UIViewController *viewController = [tableView sensorsAnalyticsViewController];
+        UIViewController *viewController = [tableView viewController];
 
-        if (viewController == nil || [viewController isKindOfClass:UINavigationController.class]) {
+        if (viewController == nil ||
+            [@"UINavigationController" isEqualToString:NSStringFromClass([viewController class])]) {
             viewController = [[SensorsAnalyticsSDK sharedInstance] currentViewController];
         }
 
@@ -550,8 +554,10 @@
 
         @try {
             if (view.sensorsAnalyticsDelegate) {
-                if ([view.sensorsAnalyticsDelegate conformsToProtocol:@protocol(SAUIViewAutoTrackDelegate)] && [view.sensorsAnalyticsDelegate respondsToSelector:@selector(sensorsAnalytics_tableView:autoTrackPropertiesAtIndexPath:)]) {
+                if ([view.sensorsAnalyticsDelegate conformsToProtocol:@protocol(SAUIViewAutoTrackDelegate)]) {
+                    if ([view.sensorsAnalyticsDelegate respondsToSelector:@selector(sensorsAnalytics_tableView:autoTrackPropertiesAtIndexPath:)]) {
                         [properties addEntriesFromDictionary:[view.sensorsAnalyticsDelegate sensorsAnalytics_tableView:tableView autoTrackPropertiesAtIndexPath:indexPath]];
+                    }
                 }
             }
         } @catch (NSException *exception) {

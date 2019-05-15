@@ -1,8 +1,9 @@
-//  SASwizzler.h
-//  SensorsAnalyticsSDK
+// JRSwizzle.h semver:1.0
+//   Copyright (c) 2007-2011 Jonathan 'Wolf' Rentzsch: http://rentzsch.com
+//   Some rights reserved: http://opensource.org/licenses/MIT
+//   https://github.com/rentzsch/jrswizzle
 //
-//  Created by 雨晗 on 1/20/16
-//  Copyright © 2015－2018 Sensors Data Inc. All rights reserved.
+//  Methods and Category have been renamed to namespace to Mixpanel iOS SDK
 //
 
 #import <Foundation/Foundation.h>

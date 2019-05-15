@@ -3,7 +3,7 @@
 //  SensorsAnalyticsSDK
 //
 //  Created by 王灼洲 on 17/3/22.
-//  Copyright © 2015－2018 Sensors Data Inc. All rights reserved.
+//  Copyright (c) 2017年 SensorsData. All rights reserved.
 //
 
 #import "UIApplication+AutoTrack.h"
@@ -143,9 +143,10 @@
                 [properties setValue:view.sensorsAnalyticsViewID forKey:@"$element_id"];
             }
             
-            UIViewController *viewController = [view sensorsAnalyticsViewController];
+            UIViewController *viewController = [view viewController];
             
-            if (viewController == nil || [viewController isKindOfClass:UINavigationController.class]) {
+            if (viewController == nil ||
+                [@"UINavigationController" isEqualToString:NSStringFromClass([viewController class])]) {
                 viewController = [[SensorsAnalyticsSDK sharedInstance] currentViewController];
             }
             
