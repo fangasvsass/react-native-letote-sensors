@@ -3,15 +3,36 @@
 //  SensorsAnalyticsSDK
 //
 //  Created by 王灼洲 on 17/3/22.
-//  Copyright (c) 2017年 SensorsData. All rights reserved.
+//  Copyright © 2015-2019 Sensors Data Inc. All rights reserved.
 //
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//
+
+#if ! __has_feature(objc_arc)
+#error This file must be compiled with ARC. Either turn on ARC for the project or use -fobjc-arc flag on this file.
+#endif
+
 
 #import "UIApplication+AutoTrack.h"
 #import "SALogger.h"
 #import "SensorsAnalyticsSDK.h"
-#import "AutoTrackUtils.h"
 #import "UIView+SAHelpers.h"
 #import "UIView+AutoTrack.h"
+#import "SAConstants+Private.h"
+#import "SensorsAnalyticsSDK+Private.h"
+#import "UIViewController+AutoTrack.h"
+#import "SAAutoTrackUtils.h"
+
 @implementation UIApplication (AutoTrack)
 
 - (BOOL)sa_sendAction:(SEL)action to:(id)to from:(id)from forEvent:(UIEvent *)event {
@@ -26,15 +47,8 @@
     BOOL sensorsAnalyticsAutoTrackAfterSendAction = NO;
 
     @try {
-        if (from) {
-            if ([from isKindOfClass:[UIView class]]) {
-                UIView* view = (UIView *)from;
-                if (view) {
-                    if (view.sensorsAnalyticsAutoTrackAfterSendAction) {
-                        sensorsAnalyticsAutoTrackAfterSendAction = YES;
-                    }
-                }
-            }
+        if ([from isKindOfClass:[UIView class]] && [(UIView *)from sensorsAnalyticsAutoTrackAfterSendAction]) {
+            sensorsAnalyticsAutoTrackAfterSendAction = YES;
         }
     } @catch (NSException *exception) {
         SAError(@"%@ error: %@", self, exception);
@@ -68,291 +82,48 @@
 }
 
 - (void)sa_track:(SEL)action to:(id)to from:(id)from forEvent:(UIEvent *)event {
-    @try {
-        //关闭 AutoTrack
-        if (![[SensorsAnalyticsSDK sharedInstance] isAutoTrackEnabled]) {
-            return;
-        }
-        
-        //忽略 $AppClick 事件
-        if ([[SensorsAnalyticsSDK sharedInstance] isAutoTrackEventTypeIgnored:SensorsAnalyticsEventTypeAppClick]) {
-            return;
-        }
-        
-        // ViewType 被忽略
+    // ViewType 被忽略
 #if (defined SENSORS_ANALYTICS_ENABLE_NO_PUBLICK_APIS)
-        if ([from isKindOfClass:[NSClassFromString(@"UITabBarButton") class]]) {
-            if ([[SensorsAnalyticsSDK sharedInstance] isViewTypeIgnored:[UITabBar class]]) {
-                return;
-            }
-        } else if ([from isKindOfClass:[NSClassFromString(@"UINavigationButton") class]]) {
-            if ([[SensorsAnalyticsSDK sharedInstance] isViewTypeIgnored:[UIBarButtonItem class]]) {
-                return;
-            }
-        } else
-#endif
-        if ([to isKindOfClass:[UISearchBar class]]) {
-            if ([[SensorsAnalyticsSDK sharedInstance] isViewTypeIgnored:[UISearchBar class]]) {
-                return;
-            }
-        } else {
-            if ([[SensorsAnalyticsSDK sharedInstance] isViewTypeIgnored:[from class]]) {
-                return;
-            }
-        }
-        
-        /*
-         此处不处理 UITabBar，放到 UITabBar+AutoTrack.h 中处理
-         */
-        if (from != nil) {
-            if ([from isKindOfClass:[UIBarButtonItem class]]) {
-                return;
-            }
-#if (defined SENSORS_ANALYTICS_ENABLE_NO_PUBLICK_APIS)
-            if ([from isKindOfClass:[NSClassFromString(@"UITabBarButton") class]]) {
-                return;
-            }
+    if ([from isKindOfClass:NSClassFromString(@"UITabBarButton")]) {
+        return;
+    } else if ([from isKindOfClass:NSClassFromString(@"UINavigationButton")] && [[SensorsAnalyticsSDK sharedInstance] isViewTypeIgnored:[UIBarButtonItem class]]) {
+        return;
+    } else
 #else
-            if ([to isKindOfClass:[UITabBar class]]) {
-                return;
-            }
+    if ([to isKindOfClass:[UITabBar class]]) {
+        return;
+    } else
 #endif
-        }
-        
-        if (([event isKindOfClass:[UIEvent class]] && event.type==UIEventTypeTouches) ||
-            [from isKindOfClass:[UISwitch class]] ||
-            [from isKindOfClass:[UIStepper class]] ||
-            [from isKindOfClass:[UISegmentedControl class]]) {//0
-            if (![from isKindOfClass:[UIView class]]) {
-                return;
-            }
-            
-            UIView* view = (UIView *)from;
-            if (!view) {
-                return;
-            }
-            
-            if (view.sensorsAnalyticsIgnoreView) {
-                return;
-            }
-            
-            NSMutableDictionary *properties = [[NSMutableDictionary alloc] init];
-            
-            //ViewID
-            if (view.sensorsAnalyticsViewID != nil) {
-                [properties setValue:view.sensorsAnalyticsViewID forKey:@"$element_id"];
-            }
-            
-            UIViewController *viewController = [view viewController];
-            
-            if (viewController == nil ||
-                [@"UINavigationController" isEqualToString:NSStringFromClass([viewController class])]) {
-                viewController = [[SensorsAnalyticsSDK sharedInstance] currentViewController];
-            }
-            
-            if (viewController != nil) {
-                if ([[SensorsAnalyticsSDK sharedInstance] isViewControllerIgnored:viewController]) {
-                    return;
-                }
-                
-                //获取 Controller 名称($screen_name)
-                NSString *screenName = NSStringFromClass([viewController class]);
-                [properties setValue:screenName forKey:@"$screen_name"];
-                
-                NSString *controllerTitle = viewController.navigationItem.title;
-                if (controllerTitle != nil) {
-                    [properties setValue:viewController.navigationItem.title forKey:@"$title"];
-                }
-                //再获取 controller.navigationItem.titleView, 并且优先级比较高
-                NSString *elementContent = [[SensorsAnalyticsSDK sharedInstance] getUIViewControllerTitle:viewController];
-                if (elementContent != nil && [elementContent length] > 0) {
-                    elementContent = [elementContent substringWithRange:NSMakeRange(0,[elementContent length] - 1)];
-                    [properties setValue:elementContent forKey:@"$title"];
-                }
-            }
-            
-            //UISwitch
-            if ([from isKindOfClass:[UISwitch class]]) {
-                [properties setValue:@"UISwitch" forKey:@"$element_type"];
-                UISwitch *uiSwitch = (UISwitch *)from;
-                if (uiSwitch.on) {
-                    [properties setValue:@"checked" forKey:@"$element_content"];
-                } else {
-                    [properties setValue:@"unchecked" forKey:@"$element_content"];
-                }
-                
-                [AutoTrackUtils sa_addViewPathProperties:properties withObject:uiSwitch withViewController:viewController];
-                
-                //View Properties
-                NSDictionary* propDict = view.sensorsAnalyticsViewProperties;
-                if (propDict != nil) {
-                    [properties addEntriesFromDictionary:propDict];
-                }
-                [[SensorsAnalyticsSDK sharedInstance] track:@"$AppClick" withProperties:properties];
-                return;
-            }
-
-            //UIStepper
-            if ([from isKindOfClass:[UIStepper class]]) {
-                [properties setValue:@"UIStepper" forKey:@"$element_type"];
-                UIStepper *stepper = (UIStepper *)from;
-                if (stepper) {
-                    [properties setValue:[NSString stringWithFormat:@"%g", stepper.value] forKey:@"$element_content"];
-                }
-                
-                [AutoTrackUtils sa_addViewPathProperties:properties withObject:stepper withViewController:viewController];
-                
-                //View Properties
-                NSDictionary* propDict = view.sensorsAnalyticsViewProperties;
-                if (propDict != nil) {
-                    [properties addEntriesFromDictionary:propDict];
-                }
-                [[SensorsAnalyticsSDK sharedInstance] track:@"$AppClick" withProperties:properties];
-                return;
-            }
-
-            //UISearchBar
-            //        if ([to isKindOfClass:[UISearchBar class]] && [from isKindOfClass:[[NSClassFromString(@"UISearchBarTextField") class] class]]) {
-            //            UISearchBar *searchBar = (UISearchBar *)to;
-            //            if (searchBar != nil) {
-            //                [properties setValue:@"UISearchBar" forKey:@"$element_type"];
-            //                NSString *searchText = searchBar.text;
-            //                if (searchText == nil || [searchText length] == 0) {
-            //                    [[SensorsAnalyticsSDK sharedInstance] track:@"$AppClick" withProperties:properties];
-            //                    return;
-            //                }
-            //            }
-            //        }
-            
-            //UISegmentedControl
-            if ([from isKindOfClass:[UISegmentedControl class]]) {
-                UISegmentedControl *segmented = (UISegmentedControl *)from;
-                [properties setValue:@"UISegmentedControl" forKey:@"$element_type"];
-                
-                if ([segmented selectedSegmentIndex] == UISegmentedControlNoSegment) {
-                    return;
-                }
-                [properties setValue:[NSString stringWithFormat: @"%ld", (long)[segmented selectedSegmentIndex]] forKey:@"$element_position"];
-                [properties setValue:[segmented titleForSegmentAtIndex:[segmented selectedSegmentIndex]] forKey:@"$element_content"];
-                
-                [AutoTrackUtils sa_addViewPathProperties:properties withObject:segmented withViewController:viewController];
-                
-                //View Properties
-                NSDictionary* propDict = view.sensorsAnalyticsViewProperties;
-                if (propDict != nil) {
-                    [properties addEntriesFromDictionary:propDict];
-                }
-                [[SensorsAnalyticsSDK sharedInstance] track:@"$AppClick" withProperties:properties];
-                return;
-                
-            }
-            
-            //只统计触摸结束时
-            if ([event isKindOfClass:[UIEvent class]] && [[[event allTouches] anyObject] phase] == UITouchPhaseEnded) {
-#if (defined SENSORS_ANALYTICS_ENABLE_NO_PUBLICK_APIS)
-                if ([from isKindOfClass:[NSClassFromString(@"UINavigationButton") class]]) {
-                    UIButton *button = (UIButton *)from;
-                    [properties setValue:@"UIBarButtonItem" forKey:@"$element_type"];
-                    if (button != nil) {
-                        NSString *currentTitle = button.sa_elementContent;
-                        if (currentTitle != nil) {
-                            [properties setValue:currentTitle forKey:@"$element_content"];
-                        } else {
-#ifndef SENSORS_ANALYTICS_DISABLE_AUTOTRACK_UIIMAGE_IMAGENAME
-                            UIImage *image = button.currentImage;
-                            if (image) {
-                                NSString *imageName = image.sensorsAnalyticsImageName;
-                                if (imageName != nil) {
-                                    [properties setValue:[NSString stringWithFormat:@"$%@", imageName] forKey:@"$element_content"];
-                                }
-                            }
-#endif
-                        }
-                    }
-                } else
-#endif
-                if ([from isKindOfClass:[UIButton class]]) {//UIButton
-                    UIButton *button = (UIButton *)from;
-                    [properties setValue:@"UIButton" forKey:@"$element_type"];
-                    if (button != nil) {
-                        NSString *currentTitle = button.sa_elementContent;
-                        if (currentTitle != nil) {
-                            [properties setValue:currentTitle forKey:@"$element_content"];
-                        } else {
-                            if (button.subviews.count > 0) {
-                                NSString *elementContent = [[NSString alloc] init];
-                                elementContent = [AutoTrackUtils contentFromView:button];
-                                if (elementContent != nil && [elementContent length] > 0) {
-                                    elementContent = [elementContent substringWithRange:NSMakeRange(0,[elementContent length] - 1)];
-                                    [properties setValue:elementContent forKey:@"$element_content"];
-                                } else {
-#ifndef SENSORS_ANALYTICS_DISABLE_AUTOTRACK_UIIMAGE_IMAGENAME
-                                    UIImage *image = button.currentImage;
-                                    if (image) {
-                                        NSString *imageName = image.sensorsAnalyticsImageName;
-                                        if (imageName != nil) {
-                                            [properties setValue:[NSString stringWithFormat:@"$%@", imageName] forKey:@"$element_content"];
-                                        }
-                                    }
-#endif
-                                }
-                            }
-                        }
-                    }
-                }
-#if (defined SENSORS_ANALYTICS_ENABLE_NO_PUBLICK_APIS)
-                else if ([from isKindOfClass:[NSClassFromString(@"UITabBarButton") class]]) {//UITabBarButton
-                    if ([to isKindOfClass:[UITabBar class]]) {//UITabBar
-                        UITabBar *tabBar = (UITabBar *)to;
-                        if (tabBar != nil) {
-                            UITabBarItem *item = [tabBar selectedItem];
-                            [properties setValue:@"UITabbar" forKey:@"$element_type"];
-                            [properties setValue:item.title forKey:@"$element_content"];
-                        }
-                    }
-                }
-#endif
-                else if([from isKindOfClass:[UITabBarItem class]]){//For iOS7 TabBar
-                    UITabBarItem *tabBarItem = (UITabBarItem *)from;
-                    if (tabBarItem) {
-                        [properties setValue:@"UITabbar" forKey:@"$element_type"];
-                        [properties setValue:tabBarItem.title forKey:@"$element_content"];
-                    }
-                } else if ([from isKindOfClass:[UISlider class]]) {//UISlider
-                    UISlider *slide = (UISlider *)from;
-                    if (slide != nil) {
-                        [properties setValue:@"UISlider" forKey:@"$element_type"];
-                        [properties setValue:[NSString stringWithFormat:@"%f",slide.value] forKey:@"$element_content"];
-                    }
-                } else {
-                    if ([from isKindOfClass:[UIControl class]]) {
-                        [properties setValue:@"UIControl" forKey:@"$element_type"];
-                        UIControl *fromView = (UIControl *)from;
-                        if (fromView.subviews.count > 0) {
-                            NSString *elementContent = [[NSString alloc] init];
-                            elementContent = [AutoTrackUtils contentFromView:fromView];
-                            if (elementContent != nil && [elementContent length] > 0) {
-                                elementContent = [elementContent substringWithRange:NSMakeRange(0,[elementContent length] - 1)];
-                                [properties setValue:elementContent forKey:@"$element_content"];
-                            }
-                        }
-                    }
-                }
-                
-                [AutoTrackUtils sa_addViewPathProperties:properties withObject:view withViewController:viewController];
-                
-                //View Properties
-                NSDictionary* propDict = view.sensorsAnalyticsViewProperties;
-                if (propDict != nil) {
-                    [properties addEntriesFromDictionary:propDict];
-                }
-                
-                [[SensorsAnalyticsSDK sharedInstance] track:@"$AppClick" withProperties:properties];
-            }
-        }
-    } @catch (NSException *exception) {
-        SAError(@"%@ error: %@", self, exception);
+    if (![from conformsToProtocol:@protocol(SAAutoTrackViewProperty)] && ![to isKindOfClass:[UITabBarController class]]) {
+        return;
     }
+
+    BOOL isTabBar = [from isKindOfClass:[UITabBarItem class]] && [to isKindOfClass:[UITabBarController class]];
+
+    NSObject<SAAutoTrackViewProperty> *object = (NSObject<SAAutoTrackViewProperty> *)from;
+    NSMutableDictionary *properties = [SAAutoTrackUtils propertiesWithAutoTrackObject:object viewController:isTabBar ? (UITabBarController *)to : nil];
+    if (!properties) {
+        return;
+    }
+
+    if ([object isKindOfClass:[UISwitch class]] ||
+        [object isKindOfClass:[UIStepper class]] ||
+        [object isKindOfClass:[UISegmentedControl class]] ||
+        [object isKindOfClass:[UITabBarItem class]]) {
+        [[SensorsAnalyticsSDK sharedInstance] track:SA_EVENT_NAME_APP_CLICK withProperties:properties withTrackType:SensorsAnalyticsTrackTypeAuto];
+        return;
+    }
+
+    if ([event isKindOfClass:[UIEvent class]] && event.type == UIEventTypeTouches && [[[event allTouches] anyObject] phase] == UITouchPhaseEnded) {
+#if (defined SENSORS_ANALYTICS_ENABLE_NO_PUBLICK_APIS)
+        if ([from isKindOfClass:NSClassFromString(@"UINavigationButton")]) {
+            properties[SA_EVENT_PROPERTY_ELEMENT_TYPE] = @"UIBarButtonItem";
+        }
+#endif
+        [[SensorsAnalyticsSDK sharedInstance] track:SA_EVENT_NAME_APP_CLICK withProperties:properties withTrackType:SensorsAnalyticsTrackTypeAuto];
+        return;
+    }
+
 }
 
 @end

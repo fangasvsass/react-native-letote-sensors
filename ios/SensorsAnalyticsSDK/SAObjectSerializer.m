@@ -3,10 +3,25 @@
 //  SensorsAnalyticsSDK
 //
 //  Created by 雨晗 on 1/18/16.
-//  Copyright (c) 2016年 SensorsData. All rights reserved.
+//  Copyright © 2015-2019 Sensors Data Inc. All rights reserved.
 //
-/// Copyright (c) 2014 Mixpanel. All rights reserved.
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
 //
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//
+
+#if ! __has_feature(objc_arc)
+#error This file must be compiled with ARC. Either turn on ARC for the project or use -fobjc-arc flag on this file.
+#endif
+
 
 #import <objc/runtime.h>
 
@@ -63,11 +78,11 @@
 - (void)visitObject:(NSObject *)object withContext:(SAObjectSerializerContext *)context {
     NSParameterAssert(object != nil);
     NSParameterAssert(context != nil);
-
+    
     [context addVisitedObject:object];
-
+    
     NSMutableDictionary *propertyValues = [[NSMutableDictionary alloc] init];
-
+    
     SAClassDescription *classDescription = [self classDescriptionForObject:object];
     if (classDescription) {
         for (SAPropertyDescription *propertyDescription in [classDescription propertyDescriptions]) {
@@ -77,7 +92,7 @@
             }
         }
     }
-
+    
     NSMutableArray *delegateMethods = [NSMutableArray array];
     id delegate;
     SEL delegateSelector = NSSelectorFromString(@"delegate");
@@ -91,17 +106,15 @@
             }
         }
     }
-
-    NSDictionary *serializedObject = @{
-        @"id": [_objectIdentityProvider identifierForObject:object],
-        @"class": [self classHierarchyArrayForObject:object],
-        @"properties": propertyValues,
-        @"delegate": @{
-                @"class": delegate ? NSStringFromClass([delegate class]) : @"",
-                @"selectors": delegateMethods
-            }
-    };
-
+    
+    NSDictionary *serializedObject = @{@"id": [_objectIdentityProvider identifierForObject:object],
+                                       @"class": [self classHierarchyArrayForObject:object],
+                                       @"properties": propertyValues,
+                                       @"delegate": @{
+                                               // BlockKit 等库使用 NSProxy 作 delegate 转发可能重写了 - (Class)class。
+                                               @"class": delegate ? [NSString stringWithFormat:@"%@",[delegate class]] : @"",
+                                               @"selectors": delegateMethods}};
+    
     [context addSerializedObject:serializedObject];
 }
 
@@ -256,14 +269,12 @@ propertyDescription:(SAPropertyDescription *)propertyDescription
                     result = [valueForKey sortedArrayUsingComparator:^NSComparisonResult(UIView *obj1, UIView *obj2) {
                         if (obj2.frame.origin.y > obj1.frame.origin.y) {
                             return NSOrderedDescending;
-                        } else {
-                            if (obj2.frame.origin.x > obj1.frame.origin.x) {
-                                return NSOrderedDescending;
-                            } else {
-                                return NSOrderedAscending;
-                            }
                         }
-                        return NSOrderedSame;
+                        if (obj2.frame.origin.x > obj1.frame.origin.x) {
+                            return NSOrderedDescending;
+                        } else {
+                            return NSOrderedAscending;
+                        }
                     }];
                     valueForKey = [result copy];
                     //valueForKey =  [[valueForKey reverseObjectEnumerator] allObjects];
