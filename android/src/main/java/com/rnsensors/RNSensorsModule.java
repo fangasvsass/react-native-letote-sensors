@@ -228,4 +228,10 @@ public class RNSensorsModule extends ReactContextBaseJavaModule {
     public String getName() {
         return "RNSensors";
     }
+
+    @ReactMethod
+    public void getDistinctId(Promise promise) {
+        String id=SensorsDataAPI.sharedInstance().getDistinctId();
+        promise.resolve(id);
+    }
 }
