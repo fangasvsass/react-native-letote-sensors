@@ -89,9 +89,9 @@ RCT_EXPORT_METHOD(registerDynamicSuperProperties:(NSDictionary *)properties) {
       return properties;
     }];
 }
-RCT_EXPORT_METHOD(getDistinctId: (RCTPromiseResolveBlock)resolve) {
+RCT_EXPORT_METHOD(getDistinctId: (RCTResponseSenderBlock)callback) {
     NSString*id=[[SensorsAnalyticsSDK sharedInstance] distinctId];
-    resolve(id);
+    callback(id);
 }
 
 @end

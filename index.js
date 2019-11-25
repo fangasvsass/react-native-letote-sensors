@@ -101,8 +101,6 @@ export default class Sensors {
   }
 
   static getDistinctId(callback) {
-    RNSensors.getDistinctId(id => {
-      callback(id);
-    });
+    callback(callback);
   }
 }
