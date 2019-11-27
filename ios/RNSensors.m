@@ -95,5 +95,9 @@ RCT_EXPORT_METHOD(getDistinctId: (RCTResponseSenderBlock)callback) {
     callback(@[distinctId]);
 }
 
+RCT_EXPORT_METHOD(getAnonymousId: (RCTResponseSenderBlock)callback) {
+    NSString* anonymousId = [[SensorsAnalyticsSDK sharedInstance] anonymousId];
+    callback(@[anonymousId]);
+}
 @end
 
