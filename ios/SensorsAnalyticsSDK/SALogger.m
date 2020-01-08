@@ -3,7 +3,7 @@
 //  SensorsAnalyticsSDK
 //
 //  Created by 向作为 on 2018/3/28.
-//  Copyright © 2015-2019 Sensors Data Inc. All rights reserved.
+//  Copyright © 2015-2020 Sensors Data Co., Ltd. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -118,8 +118,10 @@ static dispatch_queue_t __logQueue__ ;
    function:(const char *)function
        line:(NSUInteger)line {
     @try {
-        NSString *logMessage = [[NSString alloc] initWithFormat:@"[SALog][%@]  %s [line %lu]    %s %@", [self descriptionForLevel:level], function, (unsigned long)line, [@"" UTF8String], message.sensorsdata_unicodeString];
-        NSLog(@"%@", logMessage);
+        dispatch_async(__logQueue__ , ^{
+            NSString *logMessage = [[NSString alloc] initWithFormat:@"[SALog][%@]  %s [line %lu]    %s %@", [self descriptionForLevel:level], function, (unsigned long)line, [@"" UTF8String], message.sensorsdata_unicodeString];
+            NSLog(@"%@", logMessage);
+        });
     } @catch(NSException *e) {
        
     }

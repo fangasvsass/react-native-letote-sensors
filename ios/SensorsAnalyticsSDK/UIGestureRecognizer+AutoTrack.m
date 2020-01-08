@@ -3,7 +3,7 @@
 //  SensorsAnalyticsSDK
 //
 //  Created by 储强盛 on 2018/10/25.
-//  Copyright © 2015-2019 Sensors Data Inc. All rights reserved.
+//  Copyright © 2015-2020 Sensors Data Co., Ltd. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -37,6 +37,11 @@
 
 - (void)trackGestureRecognizerAppClick:(UIGestureRecognizer *)gesture {
     @try {
+        // 手势处于 Ended 状态
+        if (gesture.state != UIGestureRecognizerStateEnded) {
+            return;
+        }
+        
         UIView *view = gesture.view;
         // 暂定只采集 UILabel 和 UIImageView
         BOOL isTrackClass = [view isKindOfClass:UILabel.class] || [view isKindOfClass:UIImageView.class];
@@ -44,7 +49,6 @@
         if (!isTrackClass || isIgnored) {
             return;
         }
-
         NSDictionary *properties = [SAAutoTrackUtils propertiesWithAutoTrackObject:view];
         if (properties) {
             [[SensorsAnalyticsSDK sharedInstance] track:SA_EVENT_NAME_APP_CLICK withProperties:properties withTrackType:SensorsAnalyticsTrackTypeAuto];

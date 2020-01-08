@@ -3,7 +3,7 @@
 //  SensorsAnalyticsSDK
 //
 //  Created by MC on 2019/4/22.
-//  Copyright © 2019 Sensors Data Inc. All rights reserved.
+//  Copyright © 2019-2020 Sensors Data Co., Ltd. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@
 + (UIViewController *)currentViewController {
     __block UIViewController *currentViewController = nil;
     void (^ block)(void) = ^{
-        UIViewController *rootViewController = UIApplication.sharedApplication.delegate.window.rootViewController;
+        UIViewController *rootViewController = UIApplication.sharedApplication.keyWindow.rootViewController;
         currentViewController = [SAAutoTrackUtils findCurrentViewControllerFromRootViewController:rootViewController isRoot:YES];
     };
 
@@ -115,10 +115,22 @@
 #pragma mark -
 @implementation SAAutoTrackUtils (Property)
 
++ (NSDictionary *)screenInfoWithController:(UIViewController *)controller {
+    NSMutableDictionary *properties = [NSMutableDictionary dictionary];
+    if ([controller conformsToProtocol:@protocol(SAAutoTracker)] && [controller respondsToSelector:@selector(getTrackProperties)]) {
+        UIViewController<SAAutoTracker> *autoTrackerController = (UIViewController<SAAutoTracker> *)controller;
+        NSDictionary *trackProperties = [autoTrackerController getTrackProperties];
+        properties[SA_EVENT_PROPERTY_SCREEN_NAME] = trackProperties[SA_EVENT_PROPERTY_SCREEN_NAME];
+        properties[SA_EVENT_PROPERTY_TITLE] = trackProperties[SA_EVENT_PROPERTY_TITLE];
+    }
+    return properties;
+}
+
 + (NSDictionary<NSString *, NSString *> *)propertiesWithViewController:(UIViewController<SAAutoTrackViewControllerProperty> *)viewController {
     NSMutableDictionary *properties = [[NSMutableDictionary alloc] init];
     properties[SA_EVENT_PROPERTY_SCREEN_NAME] = viewController.sensorsdata_screenName;
     properties[SA_EVENT_PROPERTY_TITLE] = viewController.sensorsdata_title;
+    [properties addEntriesFromDictionary:[self screenInfoWithController:viewController]];
     return [properties copy];
 }
 

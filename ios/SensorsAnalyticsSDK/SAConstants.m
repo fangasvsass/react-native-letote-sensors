@@ -3,7 +3,7 @@
 //  SensorsAnalyticsSDK
 //
 //  Created by 向作为 on 2018/8/9.
-//  Copyright © 2015-2019 Sensors Data Inc. All rights reserved.
+//  Copyright © 2015-2020 Sensors Data Co., Ltd. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ NSString * const SA_EVENT_NAME_APP_SIGN_UP = @"$SignUp";
 #pragma mark - app install property
 NSString * const SA_EVENT_PROPERTY_APP_INSTALL_SOURCE = @"$ios_install_source";
 NSString * const SA_EVENT_PROPERTY_APP_INSTALL_DISABLE_CALLBACK = @"$ios_install_disable_callback";
-NSString * const SA_EVENT_PROPERTY_APP_INSTALL_USER_AGENT = @"$user_agent";
+NSString * const SA_EVENT_PROPERTY_APP_USER_AGENT = @"$user_agent";
 NSString * const SA_EVENT_PROPERTY_APP_INSTALL_FIRST_VISIT_TIME = @"$first_visit_time";
 #pragma mark - autoTrack property
 // App 首次启动
@@ -80,6 +80,8 @@ NSString * const SA_EVENT_PROPERTY_ELEMENT_POSITION = @"$element_position";
 NSString * const SA_EVENT_PROPERTY_ELEMENT_SELECTOR = @"$element_selector";
 NSString * const SA_EVENT_PROPERTY_ELEMENT_CONTENT = @"$element_content";
 NSString * const SA_EVENT_PROPERTY_ELEMENT_TYPE = @"$element_type";
+NSString * const SA_EVENT_PROPERTY_CHANNEL_INFO = @"$channel_device_info";
+NSString * const SA_EVENT_PROPERTY_CHANNEL_CALLBACK_EVENT = @"$is_channel_callback_event";
 
 #pragma mark - common property
 NSString * const SA_EVENT_COMMON_PROPERTY_LIB = @"$lib";
@@ -111,7 +113,7 @@ NSString * const SA_EVENT_COMMON_OPTIONAL_PROPERTY_PROJECT = @"$project";
 NSString * const SA_EVENT_COMMON_OPTIONAL_PROPERTY_TOKEN = @"$token";
 NSString * const SA_EVENT_COMMON_OPTIONAL_PROPERTY_TIME = @"$time";
 //神策成立时间，2015-05-15 10:24:00.000，某些时间戳判断（毫秒）
-long const SA_EVENT_COMMON_OPTIONAL_PROPERTY_TIME_INT = 1431656640000;
+long long const SA_EVENT_COMMON_OPTIONAL_PROPERTY_TIME_INT = 1431656640000;
 
 #pragma mark - profile
 NSString * const SA_PROFILE_SET = @"profile_set";

@@ -3,7 +3,7 @@
 //  SensorsAnalyticsSDK
 //
 //  Created by 储强盛 on 2019/4/8.
-//  Copyright © 2015-2019 Sensors Data Inc. All rights reserved.
+//  Copyright © 2015-2020 Sensors Data Co., Ltd. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ extern NSString * const SA_EVENT_NAME_APP_SIGN_UP;
 #pragma mark--app install property
 extern NSString * const SA_EVENT_PROPERTY_APP_INSTALL_SOURCE;
 extern NSString * const SA_EVENT_PROPERTY_APP_INSTALL_DISABLE_CALLBACK;
-extern NSString * const SA_EVENT_PROPERTY_APP_INSTALL_USER_AGENT;
+extern NSString * const SA_EVENT_PROPERTY_APP_USER_AGENT;
 extern NSString * const SA_EVENT_PROPERTY_APP_INSTALL_FIRST_VISIT_TIME;
 
 #pragma mark--autoTrack property
@@ -78,6 +78,8 @@ extern NSString * const SA_EVENT_PROPERTY_ELEMENT_POSITION;
 extern NSString * const SA_EVENT_PROPERTY_ELEMENT_SELECTOR;
 extern NSString * const SA_EVENT_PROPERTY_ELEMENT_CONTENT;
 extern NSString * const SA_EVENT_PROPERTY_ELEMENT_TYPE;
+extern NSString * const SA_EVENT_PROPERTY_CHANNEL_INFO;
+extern NSString * const SA_EVENT_PROPERTY_CHANNEL_CALLBACK_EVENT;
 
 #pragma mark--common property
 //常规参数
@@ -113,7 +115,7 @@ extern NSString * const SA_EVENT_COMMON_OPTIONAL_PROPERTY_APP_STATE;
 extern NSString * const SA_EVENT_COMMON_OPTIONAL_PROPERTY_PROJECT;
 extern NSString * const SA_EVENT_COMMON_OPTIONAL_PROPERTY_TOKEN;
 extern NSString * const SA_EVENT_COMMON_OPTIONAL_PROPERTY_TIME;
-extern long const SA_EVENT_COMMON_OPTIONAL_PROPERTY_TIME_INT;
+extern long long const SA_EVENT_COMMON_OPTIONAL_PROPERTY_TIME_INT;
 
 #pragma mark--profile
 extern NSString * const SA_PROFILE_SET;
