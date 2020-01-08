@@ -230,15 +230,15 @@ public class RNSensorsModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getDistinctId(Promise promise) {
+    public void getDistinctId(Callback callback) {
         String id=SensorsDataAPI.sharedInstance().getDistinctId();
-        promise.resolve(id);
+        callback.invoke(id);
     }
 
 
     @ReactMethod
-    public void getAnonymousId(Promise promise) {
+    public void getAnonymousId(Callback callback) {
         String id=SensorsDataAPI.sharedInstance().getAnonymousId();
-        promise.resolve(id);
+        callback.invoke(id);
     }
 }
