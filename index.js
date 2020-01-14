@@ -93,7 +93,10 @@ export default class Sensors {
     RNSensors.trackInstallation(formatEventString(event));
   }
   static trackInstallationWithProperties(event, data) {
-    RNSensors.enableAutoTrack(formatEventString(event), formatData(data));
+    RNSensors.trackInstallationWithProperties(
+      formatEventString(event),
+      formatData(data)
+    );
   }
 
   static registerDynamicSuperProperties(data) {
