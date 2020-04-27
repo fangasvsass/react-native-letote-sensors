@@ -17,6 +17,6 @@ android {
 
 dependencies {
     compile 'com.facebook.react:react-native:+'
-    compile 'com.sensorsdata.analytics.android:SensorsAnalyticsSDK:3.2.6'
+    compile 'com.sensorsdata.analytics.android:SensorsAnalyticsSDK:4.0.2'
 }
   
