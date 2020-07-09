@@ -38,6 +38,8 @@ NSString * const SA_EVENT_LIB = @"lib";
 NSString * const SA_EVENT_PROJECT = @"project";
 NSString * const SA_EVENT_TOKEN = @"token";
 NSString * const SA_EVENT_HYBRID_H5 = @"_hybrid_h5";
+NSString * const SA_EVENT_LOGIN_ID = @"login_id";
+NSString * const SA_EVENT_ANONYMOUS_ID = @"anonymous_id";
 
 #pragma mark - Item
 NSString * const SA_EVENT_ITEM_TYPE = @"item_type";
@@ -59,6 +61,8 @@ NSString * const SA_EVENT_NAME_APP_START_PASSIVELY = @"$AppStartPassively";
 
 NSString * const SA_EVENT_NAME_APP_SIGN_UP = @"$SignUp";
 
+NSString * const SA_EVENT_NAME_APP_CRASHED = @"AppCrashed";
+
 #pragma mark - app install property
 NSString * const SA_EVENT_PROPERTY_APP_INSTALL_SOURCE = @"$ios_install_source";
 NSString * const SA_EVENT_PROPERTY_APP_INSTALL_DISABLE_CALLBACK = @"$ios_install_disable_callback";
@@ -78,37 +82,14 @@ NSString * const SA_EVENT_PROPERTY_SCREEN_NAME = @"$screen_name";
 NSString * const SA_EVENT_PROPERTY_TITLE = @"$title";
 NSString * const SA_EVENT_PROPERTY_ELEMENT_POSITION = @"$element_position";
 NSString * const SA_EVENT_PROPERTY_ELEMENT_SELECTOR = @"$element_selector";
+// 模糊路径
+NSString * const SA_EVENT_PROPERTY_ELEMENT_PATH = @"$element_path";
 NSString * const SA_EVENT_PROPERTY_ELEMENT_CONTENT = @"$element_content";
 NSString * const SA_EVENT_PROPERTY_ELEMENT_TYPE = @"$element_type";
 NSString * const SA_EVENT_PROPERTY_CHANNEL_INFO = @"$channel_device_info";
 NSString * const SA_EVENT_PROPERTY_CHANNEL_CALLBACK_EVENT = @"$is_channel_callback_event";
 
 #pragma mark - common property
-NSString * const SA_EVENT_COMMON_PROPERTY_LIB = @"$lib";
-NSString * const SA_EVENT_COMMON_PROPERTY_LIB_VERSION = @"$lib_version";
-NSString * const SA_EVENT_COMMON_PROPERTY_LIB_DETAIL = @"$lib_detail";
-NSString * const SA_EVENT_COMMON_PROPERTY_LIB_METHOD = @"$lib_method";
-
-NSString * const SA_EVENT_COMMON_PROPERTY_APP_VERSION = @"$app_version";
-NSString * const SA_EVENT_COMMON_PROPERTY_MODEL =@"$model";
-NSString * const SA_EVENT_COMMON_PROPERTY_MANUFACTURER = @"$manufacturer";
-NSString * const SA_EVENT_COMMON_PROPERTY_OS = @"$os";
-NSString * const SA_EVENT_COMMON_PROPERTY_OS_VERSION = @"$os_version";
-NSString * const SA_EVENT_COMMON_PROPERTY_SCREEN_HEIGHT = @"$screen_height";
-NSString * const SA_EVENT_COMMON_PROPERTY_SCREEN_WIDTH = @"$screen_width";
-NSString * const SA_EVENT_COMMON_PROPERTY_NETWORK_TYPE = @"$network_type";
-NSString * const SA_EVENT_COMMON_PROPERTY_WIFI = @"$wifi";
-NSString * const SA_EVENT_COMMON_PROPERTY_CARRIER = @"$carrier";
-NSString * const SA_EVENT_COMMON_PROPERTY_DEVICE_ID = @"$device_id";
-NSString * const SA_EVENT_COMMON_PROPERTY_IS_FIRST_DAY = @"$is_first_day";
-
-
-NSString * const SA_EVENT_COMMON_OPTIONAL_PROPERTY_LATITUDE = @"$latitude";
-NSString * const SA_EVENT_COMMON_OPTIONAL_PROPERTY_LONGITUDE = @"$longitude";
-NSString * const SA_EVENT_COMMON_OPTIONAL_PROPERTY_SCREEN_ORIENTATION = @"$screen_orientation";
-
-NSString * const SA_EVENT_COMMON_OPTIONAL_PROPERTY_APP_STATE = @"$app_state";
-
 NSString * const SA_EVENT_COMMON_OPTIONAL_PROPERTY_PROJECT = @"$project";
 NSString * const SA_EVENT_COMMON_OPTIONAL_PROPERTY_TOKEN = @"$token";
 NSString * const SA_EVENT_COMMON_OPTIONAL_PROPERTY_TIME = @"$time";
@@ -132,9 +113,11 @@ NSString * const SA_HAS_LAUNCHED_ONCE = @"HasLaunchedOnce";
 NSString * const SA_HAS_TRACK_INSTALLATION = @"HasTrackInstallation";
 NSString * const SA_HAS_TRACK_INSTALLATION_DISABLE_CALLBACK = @"HasTrackInstallationWithDisableCallback";
 
+#pragma mark - bridge name
+NSString * const SA_SCRIPT_MESSAGE_HANDLER_NAME = @"sensorsdataNativeTracker";
 
-void sensorsdata_dispatch_main_safe_sync(DISPATCH_NOESCAPE dispatch_block_t block) {
-    sensorsdata_dispatch_safe_sync(dispatch_get_main_queue(),block);
+NSSet* sensorsdata_reserved_properties() {
+    return [NSSet setWithObjects:@"date", @"datetime", @"distinct_id", @"event", @"events", @"first_id", @"id", @"original_id", @"properties", @"second_id", @"time", @"user_id", @"users", nil];
 }
 
 BOOL sensorsdata_is_same_queue(dispatch_queue_t queue) {
@@ -148,3 +131,11 @@ void sensorsdata_dispatch_safe_sync(dispatch_queue_t queue,DISPATCH_NOESCAPE dis
         dispatch_sync(queue, block);
     }
 }
+
+
+#pragma mark - SF related
+NSString *const SA_TRACK_EVENT_NOTIFICATION = @"SensorsAnalyticsTrackEventNotification";
+NSString *const SA_TRACK_LOGIN_NOTIFICATION = @"SensorsAnalyticsTrackLoginNotification";
+NSString *const SA_TRACK_LOGOUT_NOTIFICATION = @"SensorsAnalyticsTrackLogoutNotification";
+NSString *const SA_TRACK_IDENTIFY_NOTIFICATION = @"SensorsAnalyticsTrackIdentifyNotification";
+NSString *const SA_TRACK_RESETANONYMOUSID_NOTIFICATION = @"SensorsAnalyticsTrackResetAnonymousIdNotification";

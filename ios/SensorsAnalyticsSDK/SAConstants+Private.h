@@ -34,6 +34,8 @@ extern NSString * const SA_EVENT_LIB;
 extern NSString * const SA_EVENT_PROJECT;
 extern NSString * const SA_EVENT_TOKEN;
 extern NSString * const SA_EVENT_HYBRID_H5;
+extern NSString * const SA_EVENT_LOGIN_ID;
+extern NSString * const SA_EVENT_ANONYMOUS_ID;
 
 #pragma mark - Item
 extern NSString * const SA_EVENT_ITEM_TYPE;
@@ -56,6 +58,8 @@ extern NSString * const SA_EVENT_NAME_APP_START_PASSIVELY;
 
 extern NSString * const SA_EVENT_NAME_APP_SIGN_UP;
 
+extern NSString * const SA_EVENT_NAME_APP_CRASHED;
+
 #pragma mark--app install property
 extern NSString * const SA_EVENT_PROPERTY_APP_INSTALL_SOURCE;
 extern NSString * const SA_EVENT_PROPERTY_APP_INSTALL_DISABLE_CALLBACK;
@@ -76,42 +80,14 @@ extern NSString * const SA_EVENT_PROPERTY_SCREEN_NAME;
 extern NSString * const SA_EVENT_PROPERTY_TITLE;
 extern NSString * const SA_EVENT_PROPERTY_ELEMENT_POSITION;
 extern NSString * const SA_EVENT_PROPERTY_ELEMENT_SELECTOR;
+extern NSString * const SA_EVENT_PROPERTY_ELEMENT_PATH;
 extern NSString * const SA_EVENT_PROPERTY_ELEMENT_CONTENT;
 extern NSString * const SA_EVENT_PROPERTY_ELEMENT_TYPE;
 extern NSString * const SA_EVENT_PROPERTY_CHANNEL_INFO;
 extern NSString * const SA_EVENT_PROPERTY_CHANNEL_CALLBACK_EVENT;
 
 #pragma mark--common property
-//常规参数
-extern NSString * const SA_EVENT_COMMON_PROPERTY_LIB;
-extern NSString * const SA_EVENT_COMMON_PROPERTY_LIB_VERSION;
-extern NSString * const SA_EVENT_COMMON_PROPERTY_LIB_DETAIL;
-extern NSString * const SA_EVENT_COMMON_PROPERTY_LIB_METHOD;
-
-extern NSString * const SA_EVENT_COMMON_PROPERTY_APP_VERSION;
-
-extern NSString * const SA_EVENT_COMMON_PROPERTY_MODEL;
-extern NSString * const SA_EVENT_COMMON_PROPERTY_MANUFACTURER;
-
-extern NSString * const SA_EVENT_COMMON_PROPERTY_OS;
-extern NSString * const SA_EVENT_COMMON_PROPERTY_OS_VERSION;
-
-extern NSString * const SA_EVENT_COMMON_PROPERTY_SCREEN_HEIGHT;
-extern NSString * const SA_EVENT_COMMON_PROPERTY_SCREEN_WIDTH;
-
-extern NSString * const SA_EVENT_COMMON_PROPERTY_NETWORK_TYPE;
-extern NSString * const SA_EVENT_COMMON_PROPERTY_WIFI;
-extern NSString * const SA_EVENT_COMMON_PROPERTY_CARRIER;
-extern NSString * const SA_EVENT_COMMON_PROPERTY_DEVICE_ID;
-extern NSString * const SA_EVENT_COMMON_PROPERTY_IS_FIRST_DAY;
-
-
 //可选参数
-extern NSString * const SA_EVENT_COMMON_OPTIONAL_PROPERTY_LATITUDE;
-extern NSString * const SA_EVENT_COMMON_OPTIONAL_PROPERTY_LONGITUDE;
-extern NSString * const SA_EVENT_COMMON_OPTIONAL_PROPERTY_SCREEN_ORIENTATION;
-extern NSString * const SA_EVENT_COMMON_OPTIONAL_PROPERTY_APP_STATE;
-
 extern NSString * const SA_EVENT_COMMON_OPTIONAL_PROPERTY_PROJECT;
 extern NSString * const SA_EVENT_COMMON_OPTIONAL_PROPERTY_TOKEN;
 extern NSString * const SA_EVENT_COMMON_OPTIONAL_PROPERTY_TIME;
@@ -132,10 +108,21 @@ extern NSString * const SA_HAS_LAUNCHED_ONCE;
 extern NSString * const SA_HAS_TRACK_INSTALLATION;
 extern NSString * const SA_HAS_TRACK_INSTALLATION_DISABLE_CALLBACK;
 
+#pragma mark - bridge name
+extern NSString * const SA_SCRIPT_MESSAGE_HANDLER_NAME;
+
+#pragma mark - reserved property list
+NSSet* sensorsdata_reserved_properties(void);
 
 #pragma mark - safe sync
-void sensorsdata_dispatch_main_safe_sync(DISPATCH_NOESCAPE dispatch_block_t block);
-
 BOOL sensorsdata_is_same_queue(dispatch_queue_t queue);
 
 void sensorsdata_dispatch_safe_sync(dispatch_queue_t queue,DISPATCH_NOESCAPE dispatch_block_t block);
+
+
+#pragma mark - SF related
+extern NSString *const SA_TRACK_EVENT_NOTIFICATION;
+extern NSString *const SA_TRACK_LOGIN_NOTIFICATION;
+extern NSString *const SA_TRACK_LOGOUT_NOTIFICATION;
+extern NSString *const SA_TRACK_IDENTIFY_NOTIFICATION;
+extern NSString *const SA_TRACK_RESETANONYMOUSID_NOTIFICATION;

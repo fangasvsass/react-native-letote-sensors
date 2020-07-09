@@ -56,16 +56,24 @@
     options.launchOptions = self.launchOptions;
 
     options.autoTrackEventType = self.autoTrackEventType;
+    options.enableJavaScriptBridge = self.enableJavaScriptBridge;
     options.enableTrackAppCrash = self.enableTrackAppCrash;
     options.flushInterval = self.flushInterval;
     options.flushBulkSize = self.flushBulkSize;
     options.maxCacheSize = self.maxCacheSize;
-
+    options.enableSaveDeepLinkInfo = self.enableSaveDeepLinkInfo;
+    options.sourceChannels = self.sourceChannels;
     options.remoteConfigURL = self.remoteConfigURL;
+
     options.disableRandomTimeRequestRemoteConfig = self.disableRandomTimeRequestRemoteConfig;
     
     options.minRequestHourInterval = self.minRequestHourInterval;
     options.maxRequestHourInterval = self.maxRequestHourInterval;
+    options.enableLog = self.enableLog;
+    options.enableHeatMap = self.enableHeatMap;
+    options.enableVisualizedAutoTrack = self.enableVisualizedAutoTrack;
+
+    options.enableAutoAddChannelCallbackEvent = self.enableAutoAddChannelCallbackEvent;
     return options;
 }
 

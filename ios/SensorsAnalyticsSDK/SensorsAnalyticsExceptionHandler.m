@@ -25,10 +25,11 @@
 
 #import "SensorsAnalyticsExceptionHandler.h"
 #import "SensorsAnalyticsSDK.h"
-#import "SALogger.h"
+#import "SALog.h"
 #include <libkern/OSAtomic.h>
 #include <execinfo.h>
 #import "SAConstants+Private.h"
+#import "SACommonUtility.h"
 #import "SensorsAnalyticsSDK+Private.h"
 
 #if defined(SENSORS_ANALYTICS_CRASH_SLIDEADDRESS)
@@ -90,7 +91,7 @@ static const int32_t UncaughtExceptionMaximum = 10;
     sigemptyset(&action.sa_mask);
     action.sa_flags = SA_SIGINFO;
     action.sa_sigaction = &SASignalHandler;
-    int signals[] = {SIGABRT, SIGILL, SIGSEGV, SIGFPE, SIGBUS, SIGPIPE};
+    int signals[] = {SIGABRT, SIGILL, SIGSEGV, SIGFPE, SIGBUS};
     for (int i = 0; i < sizeof(signals) / sizeof(int); i++) {
         struct sigaction prev_action;
         int err = sigaction(signals[i], &action, &prev_action);
@@ -99,7 +100,7 @@ static const int32_t UncaughtExceptionMaximum = 10;
             char *address_signal = (char *)(_prev_signal_handlers + signals[i]);
             strlcpy(address_signal, address_action, sizeof(prev_action));
         } else {
-            SALog(@"Errored while trying to set up sigaction for signal %d", signals[i]);
+            SALogError(@"Errored while trying to set up sigaction for signal %d", signals[i]);
         }
     }
 }
@@ -140,7 +141,9 @@ static void SASignalHandler(int crashSignal, struct __siginfo *info, void *conte
         if (prev_action.sa_sigaction) {
             prev_action.sa_sigaction(crashSignal, info, context);
         }
-    } else if (prev_action.sa_handler) {
+    } else if (prev_action.sa_handler &&
+               prev_action.sa_handler != SIG_IGN) {
+        // SIG_IGN 表示忽略信号
         prev_action.sa_handler(crashSignal);
     }
 }
@@ -165,30 +168,33 @@ static void SAHandleException(NSException *exception) {
             if (instance.configOptions.enableTrackAppCrash) {
                 NSMutableDictionary *properties = [[NSMutableDictionary alloc] init];
                 if ([exception callStackSymbols]) {
+                   NSString *exceptionStack = [[exception callStackSymbols] componentsJoinedByString:@"\n"];
+                    
 #if defined(SENSORS_ANALYTICS_CRASH_SLIDEADDRESS)
                     long slide_address = [SensorsAnalyticsExceptionHandler sa_computeImageSlide];
-                    [properties setValue:[NSString stringWithFormat:@"Exception Reason:%@\nSlide_Address:%lx\nException Stack:%@", [exception reason], slide_address, [exception callStackSymbols]] forKey:@"app_crashed_reason"];
+                    [properties setValue:[NSString stringWithFormat:@"Exception Reason:%@\nSlide_Address:%lx\nException Stack:%@", [exception reason], slide_address, exceptionStack] forKey:@"app_crashed_reason"];
 #else
-                    [properties setValue:[NSString stringWithFormat:@"Exception Reason:%@\nException Stack:%@", [exception reason], [exception callStackSymbols]] forKey:@"app_crashed_reason"];
+                    [properties setValue:[NSString stringWithFormat:@"Exception Reason:%@\nException Stack:%@", [exception reason], exceptionStack] forKey:@"app_crashed_reason"];
 #endif
                 } else {
-                    [properties setValue:[NSString stringWithFormat:@"%@ %@", [exception reason], [NSThread callStackSymbols]] forKey:@"app_crashed_reason"];
+                    NSString *exceptionStack = [[NSThread callStackSymbols] componentsJoinedByString:@"\n"];
+                    [properties setValue:[NSString stringWithFormat:@"%@ %@", [exception reason], exceptionStack] forKey:@"app_crashed_reason"];
                 }
-                [instance track:@"AppCrashed" withProperties:properties withTrackType:SensorsAnalyticsTrackTypeAuto];
+                [instance track:SA_EVENT_NAME_APP_CRASHED withProperties:properties withTrackType:SensorsAnalyticsTrackTypeAuto];
             }
             if (![instance isAutoTrackEventTypeIgnored:SensorsAnalyticsEventTypeAppEnd]) {
-                sensorsdata_dispatch_main_safe_sync(^{
+                [SACommonUtility performBlockOnMainThread:^{
                     if (UIApplication.sharedApplication.applicationState == UIApplicationStateActive) {
                         [instance track:@"$AppEnd" withTrackType:SensorsAnalyticsTrackTypeAuto];
                     }
-                });
+                }];
             }
             // 阻塞当前线程，完成 serialQueue 中数据相关的任务
             sensorsdata_dispatch_safe_sync(instance.serialQueue, ^{});
         }
-        SALog(@"Encountered an uncaught exception. All SensorsAnalytics instances were archived.");
+        SALogError(@"Encountered an uncaught exception. All SensorsAnalytics instances were archived.");
     } @catch(NSException *exception) {
-        SAError(@"%@ error: %@", self, exception);
+        SALogError(@"%@ error: %@", self, exception);
     }
 
     NSSetUncaughtExceptionHandler(NULL);
@@ -197,7 +203,6 @@ static void SAHandleException(NSException *exception) {
     signal(SIGSEGV, SIG_DFL);
     signal(SIGFPE, SIG_DFL);
     signal(SIGBUS, SIG_DFL);
-    signal(SIGPIPE, SIG_DFL);
 }
 
 #if defined(SENSORS_ANALYTICS_CRASH_SLIDEADDRESS)
