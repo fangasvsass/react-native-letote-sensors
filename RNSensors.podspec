@@ -16,6 +16,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
 
+  s.dependency 'SensorsAnalyticsSDK', '~> 2.1.6'
   s.dependency "React"
   #s.dependency "others"
 
